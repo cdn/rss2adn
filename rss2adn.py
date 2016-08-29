@@ -76,9 +76,9 @@ def main():
                 'title': h.unescape(entry['title']),
                 'summary': entry['summary'],
             }
-#            post_update("%s %s %s" % (rss['title'], rss['link'], rss['hashtag']))
 #            post_update({"text": "%s %s"} % (rss['title'], rss['link']))
-            post_update({"text": rss['title'] + " " + rss['link']})
+#            post_update({"text": rss['title'] + " " + rss['link']})
+            post_update({"text": "[" + rss['title'] + "](" + rss['link'] + ")", "entities": {"parse_markdown_links": True}})
 
             # We keep the first feed in the cache, to use rss2twitter in normal mode the next time
             if tweet_count == 0:
@@ -97,7 +97,10 @@ def main():
         # compare with cache
         if cache['id'] != rss['id']:
             #print 'new post'
-            post_update({"text": "[" + rss['title'] + "](" + rss['link'] + ")", "entities": {"parse_markdown_links": True}})
+            post_text = "[" + rss['title'] + "](" + rss['link'] + ")"
+            entity = {"parse_markdown_links": True}
+            anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
+            post_update({"text": post_text, "entities": entity, "annotations": anno})
             cPickle.dump(rss, open(cachefile, 'wb'), -1)
 
 
