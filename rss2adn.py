@@ -74,6 +74,7 @@ def main():
                 'id': entry['id'],
                 'link': entry['link'],
                 'title': h.unescape(entry['title']),
+                'author': entry['author'],
                 'summary': entry['summary'],
             }
 #            post_update({"text": "%s %s"} % (rss['title'], rss['link']))
@@ -92,6 +93,7 @@ def main():
             'id': feed['entries'][0]['id'],
             'link': feed['entries'][0]['link'],
             'title': h.unescape(feed['entries'][0]['title']),
+            'author': feed['entries'][0]['author'],
             'summary': feed['entries'][0]['summary'],
         }
         # compare with cache
