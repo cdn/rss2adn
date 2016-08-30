@@ -100,6 +100,8 @@ def main():
             post_text = "[" + rss['title'] + "](" + rss['link'] + ")"
             entity = {"parse_markdown_links": True}
             anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
+            cite = {"type":"nl.chrs.pooroeuvre.item.author","value":{"author": rss['author']}}
+            anno.append(cite)
             post_update({"text": post_text, "entities": entity, "annotations": anno})
             cPickle.dump(rss, open(cachefile, 'wb'), -1)
 
