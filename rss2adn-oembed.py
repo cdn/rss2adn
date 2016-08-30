@@ -95,11 +95,15 @@ def main():
             'title': h.unescape(feed['entries'][0]['title']),
             'author': feed['entries'][0]['author'],
             'summary': feed['entries'][0]['summary'],
-            'media_thumbnail': feed['entries'][0]['media_thumbnail'],
         }
 
+        if feed['entries'][0]['media_thumbnail']:
+            rss['media_thumbnail'] = feed['entries'][0]['media_thumbnail']
+            print(rss['media_thumbnail'])
+
 #        print(rss['media_thumbnail'])
-#        sys.exit(0)
+#
+        sys.exit(0)
 
         # compare with cache
         if cache['id'] != rss['id']:
@@ -108,23 +112,26 @@ def main():
             entity = {"parse_markdown_links": True}
             anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
 # mashable 720x480
+# mental_floss 640x430
 # techcrunch 680x453
-            embed = {
-                "type": "net.app.core.oembed",
-                "value": {
-                    "embeddable_url": rss['link'],
-                    "height": rss['media_thumbnail'][0]['height'],
-                    "thumbnail_height": 480,
-                    "thumbnail_url": rss['media_thumbnail'][0]['url'],
-                    "thumbnail_width": rss['media_thumbnail'][0]['width'],
-                    "title": rss['title'],
-                    "type": "photo",
-                    "url": rss['media_thumbnail'][0]['url'],
-                    "version": "1.0",
-                    "width": 720
+            if rss['media_thumbnail']:
+                embed = {
+                    "type": "net.app.core.oembed",
+                    "value": {
+                        "embeddable_url": rss['link'],
+                        "height": rss['media_thumbnail'][0]['height'],
+                        "thumbnail_height": 480,
+                        "thumbnail_url": rss['media_thumbnail'][0]['url'],
+                        "thumbnail_width": rss['media_thumbnail'][0]['width'],
+                        "title": rss['title'],
+                        "type": "photo",
+                        "url": rss['media_thumbnail'][0]['url'],
+                        "version": "1.0",
+                        "width": 720
+                    }
                 }
-            }
-            anno.append(embed)
+                anno.append(embed)
+
             post_update({"text": post_text, "entities": entity, "annotations": anno})
             cPickle.dump(rss, open(cachefile, 'wb'), -1)
 
