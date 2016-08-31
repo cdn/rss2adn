@@ -78,7 +78,7 @@ def main():
                 'summary': entry['summary'],
             }
 
-            if entry['media_thumbnail']:
+            if 'media_thumbnail' in entry:
                 rss['media_thumbnail'] = entry['media_thumbnail']
                 print(rss['media_thumbnail'])
 
@@ -92,7 +92,7 @@ def main():
 # mashable 720x480 *
 # mental_floss 640x430
 # techcrunch 680x453
-            if rss['media_thumbnail']:
+            if 'media_thumbnail' in rss:
                 embed = {
                     "type": "net.app.core.oembed",
                     "value": {
@@ -130,7 +130,7 @@ def main():
             'summary': feed['entries'][0]['summary'],
         }
 
-        if feed['entries'][0]['media_thumbnail']:
+        if 'media_thumbnail' in feed['entries'][0]:
             rss['media_thumbnail'] = feed['entries'][0]['media_thumbnail']
             print(rss['media_thumbnail'])
 
@@ -145,7 +145,7 @@ def main():
             anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
 # mashable 720x480
 # techcrunch 680x453
-            if rss['media_thumbnail']:
+            if 'media_thumbnail' in rss:
                 if 'height' in rss['media_thumbnail'][0]:
                     h = rss['media_thumbnail'][0]['height']
                     w = rss['media_thumbnail'][0]['width']
