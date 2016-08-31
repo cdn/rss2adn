@@ -77,9 +77,42 @@ def main():
                 'author': entry['author'],
                 'summary': entry['summary'],
             }
+
+            if entry['media_thumbnail']:
+                rss['media_thumbnail'] = entry['media_thumbnail']
+                print(rss['media_thumbnail'])
+
 #            post_update({"text": "%s %s"} % (rss['title'], rss['link']))
 #            post_update({"text": rss['title'] + " " + rss['link']})
-            post_update({"text": "[" + rss['title'] + "](" + rss['link'] + ")", "entities": {"parse_markdown_links": True}})
+#            post_update({"text": "[" + rss['title'] + "](" + rss['link'] + ")", "entities": {"parse_markdown_links": True}})
+            post_text = "[" + rss['title'] + "](" + rss['link'] + ")"
+            entity = {"parse_markdown_links": True}
+            anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
+
+# mashable 720x480 *
+# mental_floss 640x430
+# techcrunch 680x453
+            if rss['media_thumbnail']:
+                embed = {
+                    "type": "net.app.core.oembed",
+                    "value": {
+                        "embeddable_url": rss['link'],
+                        "height": rss['media_thumbnail'][0]['height'],
+                        "thumbnail_height": 480,
+                        "thumbnail_url": rss['media_thumbnail'][0]['url'],
+                        "thumbnail_width": rss['media_thumbnail'][0]['width'],
+                        "title": rss['title'],
+                        "type": "photo",
+                        "url": rss['media_thumbnail'][0]['url'],
+                        "version": "1.0",
+                        "width": 720
+                    }
+                }
+                anno.append(embed)
+
+            cite = {"type":"nl.chrs.pooroeuvre.item.author","value":{"author": rss['author']}}
+            anno.append(cite)
+            post_update({"text": post_text, "entities": entity, "annotations": anno})
 
             # We keep the first feed in the cache, to use rss2twitter in normal mode the next time
             if tweet_count == 0:
@@ -102,8 +135,7 @@ def main():
             print(rss['media_thumbnail'])
 
 #        print(rss['media_thumbnail'])
-#
-        sys.exit(0)
+#        sys.exit(0)
 
         # compare with cache
         if cache['id'] != rss['id']:
@@ -112,22 +144,27 @@ def main():
             entity = {"parse_markdown_links": True}
             anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
 # mashable 720x480
-# mental_floss 640x430
 # techcrunch 680x453
             if rss['media_thumbnail']:
+                if 'height' in rss['media_thumbnail'][0]:
+                    h = rss['media_thumbnail'][0]['height']
+                    w = rss['media_thumbnail'][0]['width']
+                else:
+                    h = 453
+                    w = 680
                 embed = {
                     "type": "net.app.core.oembed",
                     "value": {
                         "embeddable_url": rss['link'],
-                        "height": rss['media_thumbnail'][0]['height'],
-                        "thumbnail_height": 480,
+                        "height": h,
+                        "thumbnail_height": h,
                         "thumbnail_url": rss['media_thumbnail'][0]['url'],
-                        "thumbnail_width": rss['media_thumbnail'][0]['width'],
+                        "thumbnail_width": w,
                         "title": rss['title'],
                         "type": "photo",
                         "url": rss['media_thumbnail'][0]['url'],
                         "version": "1.0",
-                        "width": 720
+                        "width": w
                     }
                 }
                 anno.append(embed)
@@ -156,5 +193,3 @@ if __name__ == "__main__":
     else:
         # Main function is done, exit cleanly
         sys.exit(0)
-
-
