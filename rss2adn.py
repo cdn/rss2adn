@@ -79,7 +79,13 @@ def main():
             }
 #            post_update({"text": "%s %s"} % (rss['title'], rss['link']))
 #            post_update({"text": rss['title'] + " " + rss['link']})
-            post_update({"text": "[" + rss['title'] + "](" + rss['link'] + ")", "entities": {"parse_markdown_links": True}})
+#            post_update({"text": "[" + rss['title'] + "](" + rss['link'] + ")", "entities": {"parse_markdown_links": True}})
+            post_text = "[" + rss['title'] + "](" + rss['link'] + ")"
+            entity = {"parse_markdown_links": True}
+            anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
+            cite = {"type":"nl.chrs.pooroeuvre.item.author","value":{"author": rss['author']}}
+            anno.append(cite)
+            post_update({"text": post_text, "entities": entity, "annotations": anno})
 
             # We keep the first feed in the cache, to use rss2twitter in normal mode the next time
             if tweet_count == 0:
@@ -125,5 +131,3 @@ if __name__ == "__main__":
     else:
         # Main function is done, exit cleanly
         sys.exit(0)
-
-
