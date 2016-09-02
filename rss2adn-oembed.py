@@ -78,6 +78,9 @@ def main():
                 'summary': entry['summary'],
             }
 
+            if 'media_content' in entry:
+                rss['media_content'] = entry['media_content']
+                print(rss['media_content'])
             if 'media_thumbnail' in entry:
                 rss['media_thumbnail'] = entry['media_thumbnail']
                 print(rss['media_thumbnail'])
@@ -130,10 +133,14 @@ def main():
             'summary': feed['entries'][0]['summary'],
         }
 
+        if 'media_content' in feed['entries'][0]:
+            rss['media_content'] = feed['entries'][0]['media_content']
+            print(rss['media_content'])
         if 'media_thumbnail' in feed['entries'][0]:
             rss['media_thumbnail'] = feed['entries'][0]['media_thumbnail']
             print(rss['media_thumbnail'])
 
+#        print(rss['media_content'])
 #        print(rss['media_thumbnail'])
 #        sys.exit(0)
 
@@ -141,11 +148,33 @@ def main():
         if cache['id'] != rss['id']:
             #print 'new post'
             post_text = "[" + rss['title'] + "](" + rss['link'] + ")"
+            post_text = "[%s](%s)" % (rss['title'], rss['link'])
             entity = {"parse_markdown_links": True}
             anno = [{"type": "net.app.core.crosspost", "value": {"canonical_url": rss['link']}}]
+# guardian 460x276/140x84
+            if 'media_content' in rss:
+                if 'width' in rss['media_content'][1]:
+                    h = 276
+                    w = rss['media_content'][1]['width']
+                embed = {
+                    "type": "net.app.core.oembed",
+                    "value": {
+                        "embeddable_url": rss['link'],
+                        "height": h,
+                        "thumbnail_height": h,
+                        "thumbnail_url": rss['media_content'][1]['url'],
+                        "thumbnail_width": w,
+                        "title": rss['title'],
+                        "type": "photo",
+                        "url": rss['media_content'][1]['url'],
+                        "version": "1.0",
+                        "width": w
+                    }
+                }
+                anno.append(embed)
 # mashable 720x480
 # techcrunch 680x453
-            if 'media_thumbnail' in rss:
+            elif 'media_thumbnail' in rss:
                 if 'height' in rss['media_thumbnail'][0]:
                     h = rss['media_thumbnail'][0]['height']
                     w = rss['media_thumbnail'][0]['width']
